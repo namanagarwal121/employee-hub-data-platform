@@ -1,20 +1,27 @@
-# Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+# Employee Hub · Data Platform (Fabric workspace)
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+The Microsoft Fabric items for the **Employee Hub** analytics pipeline: a lakehouse, PySpark notebooks, a Data Factory pipeline, a warehouse, a semantic model and a report. They're stored as code through Fabric Git integration.
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+**Part of [employee-hub-fabric-app](https://github.com/namanagarwal121/employee-hub-fabric-app).** That repo holds the Employee Hub app (the data source), the [architecture](https://github.com/namanagarwal121/employee-hub-fabric-app/blob/main/data-platform/README.md) and the [setup guide](https://github.com/namanagarwal121/employee-hub-fabric-app/blob/main/data-platform/docs/setup-guide.md), and includes this repo as a submodule at `data-platform/fabric`.
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+![Architecture](https://raw.githubusercontent.com/namanagarwal121/employee-hub-fabric-app/main/data-platform/docs/architecture.png)
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+## Items
+
+| Item | Type | Role |
+| --- | --- | --- |
+| `lh_employee_hub` | Lakehouse | `dbo` shortcuts to the app's replicated tables, plus the `bronze` and `silver` Delta tables |
+| `nb_bronze` | Notebook | Incremental load of employees (watermark on `CreatedAt` / `UpdatedAt`); refreshes departments and job titles |
+| `nb_silver` | Notebook | Latest row per employee, departments and job titles, and validation checks |
+| `employee_hub_warehouse` | Warehouse | `silver` copies and the `gold` star schema, built by stored procedures |
+| `etc_pipeline` | Data pipeline | bronze → silver → copy to warehouse → `sp_DimensionTableCreation` → `sp_fctTableCreation` → refresh the semantic model |
+| `sm-EmployeeHub` | Semantic model | Direct Lake model over `gold` (`DimEmployee`, `DimDepartment`, `DimJobTitle`, `FactEmployeeSnapshot`) |
+| `powerBi report` | Report | Headcount and salary by department and job title |
+
+## Where the source of truth lives
+
+Fabric Git integration commits to **Azure DevOps** (`dev.azure.com/namanag1211/fabric`), and this GitHub repo is a mirror of it. To update the mirror after new Fabric commits:
+
+```bash
+git pull origin main && git push github main
+```
