@@ -11,9 +11,9 @@ The Microsoft Fabric items for the **Employee Hub** analytics pipeline: a lakeho
 | Item | Type | Role |
 | --- | --- | --- |
 | `lh_employee_hub` | Lakehouse | `dbo` shortcuts to the app's replicated tables, plus the `bronze` and `silver` Delta tables |
-| `nb_bronze` | Notebook | Incremental load of employees (watermark on `CreatedAt` / `UpdatedAt`); refreshes departments and job titles |
-| `nb_silver` | Notebook | Latest row per employee, departments and job titles, and validation checks |
-| `employee_hub_warehouse` | Warehouse | `silver` copies and the `gold` star schema, built by stored procedures |
+| `nb_bronze` | Notebook | Incremental + CDC load of employees: watermark with a look-back window, a row hash so identical versions aren't appended twice, delete markers (`_op = 'D'`), an automatic full load on the first run, and an optional `full_compare` mode. Refreshes departments and job titles |
+| `nb_silver` | Notebook | Latest version per `id`, with deleted employees excluded. Validation **fails the run** on duplicate IDs, missing fields or broken links |
+| `employee_hub_warehouse` | Warehouse | `silver` copies and the `gold` star schema. Dimension keys stay stable between runs, `DimEmployee` keeps full change history (SCD Type 2), departments and titles have `-1` "Unknown" members, `FactEmployeeDailySnapshot` builds a daily history, and both builds run inside transactions |
 | `etc_pipeline` | Data pipeline | bronze → silver → copy to warehouse → `sp_DimensionTableCreation` → `sp_fctTableCreation` → refresh the semantic model |
 | `sm-EmployeeHub` | Semantic model | Direct Lake model over `gold` (`DimEmployee`, `DimDepartment`, `DimJobTitle`, `FactEmployeeSnapshot`) |
 | `powerBi report` | Report | Headcount and salary by department and job title |
