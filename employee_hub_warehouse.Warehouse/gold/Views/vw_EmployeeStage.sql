@@ -34,4 +34,3 @@ FROM (
 ) AS k;
 
 GO
-

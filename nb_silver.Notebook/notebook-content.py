@@ -23,8 +23,7 @@
 # MARKDOWN ********************
 
 # ## Silver: current state of each employee
-#
-# - Keeps the **latest bronze version per `id`** (the primary key), not per `EmployeeID`, because the app can reuse an `EmployeeID` after a delete.
+# # - Keeps the **latest bronze version per `id`** (the primary key), not per `EmployeeID`, because the app can reuse an `EmployeeID` after a delete.
 # - **Drops employees whose latest version is a delete** (`_op = 'D'`), so deletes flow through to gold.
 # - Writes the same columns, in the same order, as `employee_hub_warehouse.silver.employees`, so the pipeline's copy step keeps working.
 # - **Fails the run** on real problems (duplicate ids, missing required fields, broken department/title links) instead of only printing them.
@@ -130,4 +129,3 @@ if failed:
 # META   "language": "python",
 # META   "language_group": "synapse_pyspark"
 # META }
-

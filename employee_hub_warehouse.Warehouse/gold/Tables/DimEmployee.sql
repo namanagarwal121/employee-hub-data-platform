@@ -16,4 +16,3 @@ CREATE TABLE [gold].[DimEmployee] (
 
 
 GO
-
