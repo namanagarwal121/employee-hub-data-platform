@@ -6,8 +6,14 @@ CREATE TABLE [gold].[DimEmployee] (
     [Email]            VARCHAR (200)    NULL,
     [JoiningDate]      DATE             NULL,
     [DepartmentKey]    INT              NULL,
-    [JobTitleKey]      INT              NULL
+    [JobTitleKey]      INT              NULL,
+    [EffectiveFrom]    DATETIME2 (6)    NULL,
+    [EffectiveTo]      DATETIME2 (6)    NULL,
+    [IsCurrent]        BIT              NULL,
+    [IsDeleted]        BIT              NULL,
+    [RowHash]          VARCHAR (64)     NULL
 );
 
 
 GO
+
