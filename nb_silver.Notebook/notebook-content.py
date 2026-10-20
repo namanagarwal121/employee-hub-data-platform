@@ -20,22 +20,24 @@
 # META   }
 # META }
 
+# MARKDOWN ********************
+
+# ## Silver: current state of each employee
+#
+# - Keeps the **latest bronze version per `id`** (the primary key), not per `EmployeeID`, because the app can reuse an `EmployeeID` after a delete.
+# - **Drops employees whose latest version is a delete** (`_op = 'D'`), so deletes flow through to gold.
+# - Writes the same columns, in the same order, as `employee_hub_warehouse.silver.employees`, so the pipeline's copy step keeps working.
+# - **Fails the run** on real problems (duplicate ids, missing required fields, broken department/title links) instead of only printing them.
+
 # CELL ********************
 
-from pyspark.sql.functions import *
+from pyspark.sql import functions as F
 from pyspark.sql.window import Window
 
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
-emp_df = spark.read.format("delta")\
-                    .load("abfss://0180ef92-64b2-4fab-a6c4-40e6b3f0d56e@onelake.dfs.fabric.microsoft.com/ac9e8e90-88bc-4264-9749-a0c58a032e55/Tables/bronze/employees")
+LH = "lh_employee_hub"
+# Column order matches the warehouse table silver.employees.
+EMPLOYEE_COLS = ["id", "CreatedAt", "Email", "EmployeeID", "FullName", "JoiningDate", "Salary",
+                 "UpdatedAt", "createdBy_id", "dept_id", "title_id", "updatedBy_id"]
 
 # METADATA ********************
 
@@ -46,8 +48,22 @@ emp_df = spark.read.format("delta")\
 
 # CELL ********************
 
-w = Window.partitionBy("EmployeeID")\
-        .orderBy(greatest("UpdatedAt","CreatedAt").desc(),col("ingestion_time").desc())
+bronze = spark.read.table(f"{LH}.bronze.employees")
+ingested = (F.coalesce(F.col("_ingested_at"), F.col("ingestion_time"))
+            if "_ingested_at" in bronze.columns else F.col("ingestion_time"))
+op = F.coalesce(F.col("_op"), F.lit("I")) if "_op" in bronze.columns else F.lit("I")
+
+latest = (bronze
+          .withColumn("_ingested", ingested)
+          .withColumn("_op_", op)
+          .withColumn("_rn", F.row_number().over(
+              Window.partitionBy("id").orderBy(F.col("_ingested").desc_nulls_last(),
+                                               F.greatest("CreatedAt", F.coalesce("UpdatedAt", "CreatedAt")).desc())))
+          .filter("_rn = 1"))
+
+deleted_count = latest.filter(F.col("_op_") == "D").count()
+employees = latest.filter(F.col("_op_") != "D").select(*EMPLOYEE_COLS)
+print("current employees:", employees.count(), "| deleted (excluded):", deleted_count)
 
 # METADATA ********************
 
@@ -58,80 +74,16 @@ w = Window.partitionBy("EmployeeID")\
 
 # CELL ********************
 
-emp_df = emp_df.withColumn("rn",row_number().over(w))\
-                .filter(col("rn") == 1)\
-                .drop("rn","ingested_by","ingestion_time")
+(employees.write.format("delta").mode("overwrite")
+    .option("overwriteSchema", "true")
+    .saveAsTable(f"{LH}.silver.employees"))
 
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
-emp_df.write \
-    .format("delta") \
-    .mode("overwrite") \
-    .option("overwriteSchema", "true") \
-    .saveAsTable("lh_employee_hub.silver.Employees")
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
-dept_df = spark.read.format("delta")\
-                .load("abfss://0180ef92-64b2-4fab-a6c4-40e6b3f0d56e@onelake.dfs.fabric.microsoft.com/ac9e8e90-88bc-4264-9749-a0c58a032e55/Tables/bronze/departments")
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
-dept_df.drop("ingested_by","ingestion_time")\
-        .write \
-        .format("delta") \
-        .mode("overwrite") \
-        .option("overwriteSchema", "true") \
-        .saveAsTable("lh_employee_hub.silver.departments")
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
-titles_df = spark.read.format("delta")\
-                    .load("abfss://0180ef92-64b2-4fab-a6c4-40e6b3f0d56e@onelake.dfs.fabric.microsoft.com/ac9e8e90-88bc-4264-9749-a0c58a032e55/Tables/bronze/jobtitles")
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
-titles_df.drop("ingested_by","ingestion_time")\
-        .write \
-        .format("delta") \
-        .mode("overwrite") \
-        .option("overwriteSchema", "true") \
-        .saveAsTable("lh_employee_hub.silver.jobtitles")
+for name in ["departments", "jobtitles"]:
+    (spark.read.table(f"{LH}.bronze.{name}")
+        .drop("ingested_by", "ingestion_time")
+        .write.format("delta").mode("overwrite")
+        .option("overwriteSchema", "true")
+        .saveAsTable(f"{LH}.silver.{name}"))
 
 # METADATA ********************
 
@@ -142,69 +94,35 @@ titles_df.drop("ingested_by","ingestion_time")\
 
 # MARKDOWN ********************
 
-# **Validation**
+# **Validation.** Raises an error, failing the pipeline, when silver isn't safe to load into gold.
 
 # CELL ********************
 
-from pyspark.sql.functions import col
+emp = spark.read.table(f"{LH}.silver.employees")
+dept = spark.read.table(f"{LH}.silver.departments")
+titles = spark.read.table(f"{LH}.silver.jobtitles")
 
+problems = {
+    "duplicate ids": emp.groupBy("id").count().filter("count > 1").count(),
+    "duplicate EmployeeIDs": emp.groupBy("EmployeeID").count().filter("count > 1").count(),
+    "missing required fields": emp.filter(F.col("id").isNull() | F.col("EmployeeID").isNull()
+                                          | F.col("FullName").isNull() | F.col("Email").isNull()).count(),
+    "department link to a missing department": emp.filter(F.col("dept_id").isNotNull())
+        .join(dept.select(F.col("id").alias("dept_id")), "dept_id", "left_anti").count(),
+    "job title link to a missing title": emp.filter(F.col("title_id").isNotNull())
+        .join(titles.select(F.col("id").alias("title_id")), "title_id", "left_anti").count(),
+}
+# Not fatal: gold maps these to the "Unknown" member instead of dropping the employee.
+warnings = {
+    "no department": emp.filter(F.col("dept_id").isNull()).count(),
+    "no job title": emp.filter(F.col("title_id").isNull()).count(),
+}
+for k, v in {**problems, **warnings}.items():
+    print(f"{k}: {v}")
 
-emp = spark.read.table("lh_employee_hub.silver.Employees")
-dept = spark.read.table("lh_employee_hub.silver.Departments")
-titles = spark.read.table("lh_employee_hub.silver.JobTitles")
-
-
-duplicate_emp = emp.groupBy("EmployeeID") \
-    .count() \
-    .filter(col("count") > 1)
-
-print("Duplicate EmployeeIDs:", duplicate_emp.count())
-
-
-required_cols = ["EmployeeID", "FullName"]
-
-null_condition = col(required_cols[0]).isNull()
-
-for c in required_cols[1:]:
-    null_condition = null_condition | col(c).isNull()
-
-print("Rows with null required fields:", emp.filter(null_condition).count())
-
-
-invalid_dept = emp.filter(col("dept_id").isNotNull()).join(
-    dept.select(col("id").alias("dept_id")),
-    on="dept_id",
-    how="left_anti"
-)
-
-print("Invalid Department IDs:", invalid_dept.count())
-
-invalid_titles = emp.filter(col("title_id").isNotNull()).join(
-    titles.select(col("id").alias("title_id")),
-    on="title_id",
-    how="left_anti"
-)
-
-print("Invalid Job Title IDs:", invalid_titles.count())
-
-
-print("Employees with null dept_id:",
-      emp.filter(col("dept_id").isNull()).count())
-
-print("Employees with null title_id:",
-      emp.filter(col("title_id").isNull()).count())
-
-
-bronze = spark.read.format("delta").load(
-    "abfss://0180ef92-64b2-4fab-a6c4-40e6b3f0d56e@onelake.dfs.fabric.microsoft.com/ac9e8e90-88bc-4264-9749-a0c58a032e55/Tables/bronze/employees"
-)
-
-bronze_count = bronze.count()
-distinct_employee_ids = bronze.select("EmployeeID").distinct().count()
-silver_count = emp.count()
-
-print("Bronze row count:", bronze_count)
-print
+failed = {k: v for k, v in problems.items() if v}
+if failed:
+    raise ValueError(f"Silver validation failed: {failed}")
 
 # METADATA ********************
 
@@ -213,12 +131,3 @@ print
 # META   "language_group": "synapse_pyspark"
 # META }
 
-# CELL ********************
-
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
