@@ -1,0 +1,79 @@
+table DimEmployee
+	lineageTag: 1b7d2f3f-b2f3-446f-b278-4d448b1ee8e9
+	sourceLineageTag: [gold].[DimEmployee]
+
+	column EmployeeKey
+		dataType: int64
+		formatString: 0
+		lineageTag: d285b85e-5e26-40d7-ae03-735e3fa2c6c0
+		sourceLineageTag: EmployeeKey
+		summarizeBy: none
+		sourceColumn: EmployeeKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column EmployeeID
+		dataType: int64
+		formatString: 0
+		lineageTag: 16b936b3-011f-4373-9ccd-bb1a30bc90e3
+		sourceLineageTag: EmployeeID
+		summarizeBy: none
+		sourceColumn: EmployeeID
+
+		annotation SummarizationSetBy = Automatic
+
+	column FullName
+		dataType: string
+		lineageTag: 42367601-22c9-48c8-82a1-7c8f7d244c9a
+		sourceLineageTag: FullName
+		summarizeBy: none
+		sourceColumn: FullName
+
+		annotation SummarizationSetBy = Automatic
+
+	column Email
+		dataType: string
+		lineageTag: 18acfd38-99f6-4cfe-aaad-7344c44a2c0f
+		sourceLineageTag: Email
+		summarizeBy: none
+		sourceColumn: Email
+
+		annotation SummarizationSetBy = Automatic
+
+	column JoiningDate
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 09870c0b-0d6b-4e07-9d04-1b08dc2cba7a
+		sourceLineageTag: JoiningDate
+		summarizeBy: none
+		sourceColumn: JoiningDate
+
+		annotation SummarizationSetBy = Automatic
+
+	column DepartmentKey
+		dataType: int64
+		formatString: 0
+		lineageTag: dc3969f4-fd6a-40a2-a84c-f0f3b77958e4
+		sourceLineageTag: DepartmentKey
+		summarizeBy: none
+		sourceColumn: DepartmentKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column JobTitleKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 5d2d9b09-35e1-4f5b-9f5b-d0de19202b01
+		sourceLineageTag: JobTitleKey
+		summarizeBy: none
+		sourceColumn: JobTitleKey
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimEmployee = entity
+		mode: directLake
+		source
+			entityName: DimEmployee
+			schemaName: gold
+			expressionSource: 'DirectLake - employee_hub_warehouse'
+

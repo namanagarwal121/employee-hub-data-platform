@@ -1,0 +1,73 @@
+table FactEmployeeSnapshot
+	lineageTag: e35a2ad5-b13b-4195-933a-4882efa6e2a0
+	sourceLineageTag: [gold].[FactEmployeeSnapshot]
+
+	column SnapshotDate
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 4a12c35d-7213-4850-974b-973a6e150f93
+		sourceLineageTag: SnapshotDate
+		summarizeBy: none
+		sourceColumn: SnapshotDate
+
+		annotation SummarizationSetBy = Automatic
+
+	column EmployeeKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 73397ca3-9be4-4f79-91d9-7b3b7e918dc1
+		sourceLineageTag: EmployeeKey
+		summarizeBy: none
+		sourceColumn: EmployeeKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column DepartmentKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 46419f45-1bff-4944-a1d0-2df9f26c16ad
+		sourceLineageTag: DepartmentKey
+		summarizeBy: none
+		sourceColumn: DepartmentKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column JobTitleKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 4bae13ec-4282-4344-a0dd-e15f0e4581c3
+		sourceLineageTag: JobTitleKey
+		summarizeBy: none
+		sourceColumn: JobTitleKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column Salary
+		dataType: decimal
+		formatString: "₹"\ #,0.###############;#,0.###############\ -"₹";"₹"\ #,0.###############
+		lineageTag: cb133aa0-e7dc-4173-ac82-80418f36d544
+		sourceLineageTag: Salary
+		summarizeBy: sum
+		sourceColumn: Salary
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-IN"}
+
+	column EmployeeCount
+		dataType: int64
+		formatString: 0
+		lineageTag: 5ac61c1b-f036-4f61-9d25-4afb6dd60eb2
+		sourceLineageTag: EmployeeCount
+		summarizeBy: sum
+		sourceColumn: EmployeeCount
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FactEmployeeSnapshot = entity
+		mode: directLake
+		source
+			entityName: FactEmployeeSnapshot
+			schemaName: gold
+			expressionSource: 'DirectLake - employee_hub_warehouse'
+

@@ -1,0 +1,11 @@
+expression 'DirectLake - employee_hub_warehouse' =
+		let
+		    Source = AzureStorage.DataLake("https://onelake.dfs.fabric.microsoft.com/0180ef92-64b2-4fab-a6c4-40e6b3f0d56e/10a55059-c593-4106-8c13-df947916c880", [HierarchicalNavigation=true])
+		in
+		    Source
+	lineageTag: b4a7ce6a-6fa1-4347-bd3a-e0062030ac65
+
+	annotation PBI_IncludeFutureArtifacts = False
+
+	annotation PBI_RemovedChildren = [{"remoteItemId":{"analysisServicesObject":{"sourceName":null,"sourceLineageTag":"[silver].[jobtitles]"}},"objectType":"Table"},{"remoteItemId":{"analysisServicesObject":{"sourceName":null,"sourceLineageTag":"[silver].[departments]"}},"objectType":"Table"},{"remoteItemId":{"analysisServicesObject":{"sourceName":null,"sourceLineageTag":"[silver].[employees]"}},"objectType":"Table"}]
+

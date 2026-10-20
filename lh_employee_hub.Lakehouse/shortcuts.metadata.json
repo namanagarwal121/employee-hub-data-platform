@@ -1,0 +1,74 @@
+[
+  {
+    "name": "Users",
+    "path": "/Tables/dbo",
+    "target": {
+      "type": "OneLake",
+      "oneLake": {
+        "path": "Tables/dbo/Users",
+        "itemId": "94611970-f2ef-4b5c-a314-7846ec15e474",
+        "workspaceId": "eddf9c6c-bf43-4aa3-8d79-48a742d22636"
+      }
+    }
+  },
+  {
+    "name": "JobTitles",
+    "path": "/Tables/dbo",
+    "target": {
+      "type": "OneLake",
+      "oneLake": {
+        "path": "Tables/dbo/JobTitles",
+        "itemId": "94611970-f2ef-4b5c-a314-7846ec15e474",
+        "workspaceId": "eddf9c6c-bf43-4aa3-8d79-48a742d22636"
+      }
+    }
+  },
+  {
+    "name": "Employees",
+    "path": "/Tables/dbo",
+    "target": {
+      "type": "OneLake",
+      "oneLake": {
+        "path": "Tables/dbo/Employees",
+        "itemId": "94611970-f2ef-4b5c-a314-7846ec15e474",
+        "workspaceId": "eddf9c6c-bf43-4aa3-8d79-48a742d22636"
+      }
+    }
+  },
+  {
+    "name": "Departments",
+    "path": "/Tables/dbo",
+    "target": {
+      "type": "OneLake",
+      "oneLake": {
+        "path": "Tables/dbo/Departments",
+        "itemId": "94611970-f2ef-4b5c-a314-7846ec15e474",
+        "workspaceId": "eddf9c6c-bf43-4aa3-8d79-48a742d22636"
+      }
+    }
+  },
+  {
+    "name": "AuditEvents",
+    "path": "/Tables/dbo",
+    "target": {
+      "type": "OneLake",
+      "oneLake": {
+        "path": "Tables/dbo/AuditEvents",
+        "itemId": "94611970-f2ef-4b5c-a314-7846ec15e474",
+        "workspaceId": "eddf9c6c-bf43-4aa3-8d79-48a742d22636"
+      }
+    }
+  },
+  {
+    "name": "AppUsers",
+    "path": "/Tables/dbo",
+    "target": {
+      "type": "OneLake",
+      "oneLake": {
+        "path": "Tables/dbo/AppUsers",
+        "itemId": "94611970-f2ef-4b5c-a314-7846ec15e474",
+        "workspaceId": "eddf9c6c-bf43-4aa3-8d79-48a742d22636"
+      }
+    }
+  }
+]

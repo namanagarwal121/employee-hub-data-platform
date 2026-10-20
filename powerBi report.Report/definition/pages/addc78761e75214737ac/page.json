@@ -1,0 +1,236 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "addc78761e75214737ac",
+  "displayName": "Page 1",
+  "displayOption": "FitToPage",
+  "height": 1080,
+  "width": 1920,
+  "autoPageGenerationConfig": {
+    "selectedFields": [
+      {
+        "Column": {
+          "Expression": {
+            "SourceRef": {
+              "Entity": "DimDepartment"
+            }
+          },
+          "Property": "DepartmentName"
+        }
+      },
+      {
+        "Aggregation": {
+          "Expression": {
+            "Column": {
+              "Expression": {
+                "SourceRef": {
+                  "Entity": "FactEmployeeSnapshot"
+                }
+              },
+              "Property": "Salary"
+            }
+          },
+          "Function": 0
+        }
+      }
+    ],
+    "visualContainerConfigurations": [
+      {
+        "name": "22b07912cf9786fed1c7",
+        "fields": [
+          {
+            "Column": {
+              "Expression": {
+                "SourceRef": {
+                  "Entity": "DimDepartment"
+                }
+              },
+              "Property": "DepartmentName"
+            }
+          },
+          {
+            "Aggregation": {
+              "Expression": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactEmployeeSnapshot"
+                    }
+                  },
+                  "Property": "Salary"
+                }
+              },
+              "Function": 0
+            }
+          }
+        ]
+      },
+      {
+        "name": "aac423ca8ed1d087f064",
+        "fields": [
+          {
+            "Column": {
+              "Expression": {
+                "SourceRef": {
+                  "Entity": "DimJobTitle"
+                }
+              },
+              "Property": "JobTitle"
+            }
+          },
+          {
+            "Aggregation": {
+              "Expression": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactEmployeeSnapshot"
+                    }
+                  },
+                  "Property": "Salary"
+                }
+              },
+              "Function": 0
+            }
+          }
+        ]
+      },
+      {
+        "name": "a2125a1407e728227e32",
+        "fields": [
+          {
+            "Column": {
+              "Expression": {
+                "SourceRef": {
+                  "Entity": "DimDepartment"
+                }
+              },
+              "Property": "DepartmentName"
+            }
+          },
+          {
+            "Aggregation": {
+              "Expression": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactEmployeeSnapshot"
+                    }
+                  },
+                  "Property": "EmployeeCount"
+                }
+              },
+              "Function": 0
+            }
+          }
+        ]
+      },
+      {
+        "name": "b133184f6c66671d4f57",
+        "fields": [
+          {
+            "Column": {
+              "Expression": {
+                "SourceRef": {
+                  "Entity": "DimEmployee"
+                }
+              },
+              "Property": "JobTitleKey"
+            }
+          },
+          {
+            "Aggregation": {
+              "Expression": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactEmployeeSnapshot"
+                    }
+                  },
+                  "Property": "Salary"
+                }
+              },
+              "Function": 0
+            }
+          }
+        ]
+      },
+      {
+        "name": "ad3990a61318dc786631",
+        "fields": []
+      },
+      {
+        "name": "fdd61aaec5a8ceda1f1e",
+        "fields": []
+      },
+      {
+        "name": "71cad17385ac416524c3",
+        "fields": []
+      },
+      {
+        "name": "95f207ed499182fee763",
+        "fields": []
+      },
+      {
+        "name": "b96ef94475f73e2755ac",
+        "fields": []
+      },
+      {
+        "name": "7ecdad67c86677ce98e0",
+        "fields": []
+      },
+      {
+        "name": "dc601e9eb362e6b5a6c4",
+        "fields": []
+      },
+      {
+        "name": "1e9cc639a731087fe4a9",
+        "fields": [
+          {
+            "Aggregation": {
+              "Expression": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactEmployeeSnapshot"
+                    }
+                  },
+                  "Property": "Salary"
+                }
+              },
+              "Function": 0
+            }
+          }
+        ]
+      },
+      {
+        "name": "a62038d08e0390a7e516",
+        "fields": [
+          {
+            "Aggregation": {
+              "Expression": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactEmployeeSnapshot"
+                    }
+                  },
+                  "Property": "EmployeeCount"
+                }
+              },
+              "Function": 0
+            }
+          }
+        ]
+      },
+      {
+        "name": "3bf870723e382d7c0031",
+        "fields": []
+      }
+    ],
+    "layout": {
+      "related": {
+        "version": 1
+      }
+    }
+  }
+}

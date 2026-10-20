@@ -1,0 +1,12 @@
+relationship d4dad20d-3384-a3e8-27ba-0c99930c643c
+	fromColumn: FactEmployeeSnapshot.DepartmentKey
+	toColumn: DimDepartment.DepartmentKey
+
+relationship 0fee83bf-b9f7-d5a1-1cc5-e0c55bfae991
+	fromColumn: FactEmployeeSnapshot.JobTitleKey
+	toColumn: DimJobTitle.JobTitleKey
+
+relationship de455b8a-899d-86b5-a83d-3a5ab1378d3f
+	fromColumn: FactEmployeeSnapshot.EmployeeKey
+	toColumn: DimEmployee.EmployeeKey
+
