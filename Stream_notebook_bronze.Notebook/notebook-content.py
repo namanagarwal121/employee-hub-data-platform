@@ -1,24 +1,5 @@
 # Fabric notebook source
 
-# METADATA ********************
-
-# META {
-# META   "kernel_info": {
-# META     "name": "synapse_pyspark"
-# META   },
-# META   "dependencies": {
-# META     "lakehouse": {
-# META       "default_lakehouse": "ac9e8e90-88bc-4264-9749-a0c58a032e55",
-# META       "default_lakehouse_name": "lh_employee_hub",
-# META       "default_lakehouse_workspace_id": "0180ef92-64b2-4fab-a6c4-40e6b3f0d56e",
-# META       "known_lakehouses": [
-# META         {
-# META           "id": "ac9e8e90-88bc-4264-9749-a0c58a032e55"
-# META         }
-# META       ]
-# META     }
-# META   }
-# META }
 
 # MARKDOWN ********************
 
@@ -29,8 +10,7 @@
 # - **Typed and flat:** the `employee` struct becomes columns, `Salary` becomes `DECIMAL(12,2)` (Eventstream inferred it as a whole number) and `JoiningDate` becomes a `DATE`.
 # - **Validated, not filtered:** every event is kept, with `_is_valid` and `_reject_reason`. The apply step only uses valid events, and rejects stay queryable.
 # # Set `reset = True` once to rebuild the table and checkpoint from the full landing history (for example after changing this notebook).
-#
-# The second half turns bronze into **SQL-ready tables** in the `sql_ready` schema, one per app table, in that table's exact column layout.
+# # The second half turns bronze into **SQL-ready tables** in the `sql_ready` schema, one per app table, in that table's exact column layout.
 
 # PARAMETERS CELL ********************
 
@@ -182,10 +162,8 @@ display(bronze.groupBy("event_type", "_is_valid", "_reject_reason").count().orde
 # MARKDOWN ********************
 
 # ## SQL-ready tables: what the app's database still needs
-#
-# For each stream employee, the **newest valid event** is compared with the app's current row (read through the `dbo` shortcuts). Only the differences are written, so a rerun never repeats a change that has already landed:
-#
-# | Table in `sql_ready` | Apply to | How |
+# # For each stream employee, the **newest valid event** is compared with the app's current row (read through the `dbo` shortcuts). Only the differences are written, so a rerun never repeats a change that has already landed:
+# # | Table in `sql_ready` | Apply to | How |
 # | --- | --- | --- |
 # | `AppUsers_insert` | `AppUsers` | INSERT: the `hr-feed` user that stream rows are attributed to (only on the first run) |
 # | `Departments_insert`, `JobTitles_insert` | `Departments`, `JobTitles` | INSERT: only with `create_missing_lookups = True`; otherwise unknown names are rejected |
@@ -194,18 +172,10 @@ display(bronze.groupBy("event_type", "_is_valid", "_reject_reason").count().orde
 # | `Employees_delete` | `Employees` | DELETE by `id`: leavers still in the app |
 # | `AuditEvents_insert` | `AuditEvents` | INSERT: one audit row per change above, as the app writes them |
 # | `rejects` | not applied | events that can't be applied, with the reason |
-#
-# Apply the lookups and `AppUsers_insert` first, then the employee tables, then `AuditEvents_insert`. Rules:
+# # Apply the lookups and `AppUsers_insert` first, then the employee tables, then `AuditEvents_insert`. Rules:
 # - **Newest wins:** late or re-sent events lose to the newest valid event for that `EmployeeID`.
 # - **People win over the stream:** a change made in the app after the newest event isn't overwritten, and an employee deleted in the app isn't re-created.
 # - **Stable ids:** `id` values are derived from `EmployeeID` / `event_id`, so a rerun before you apply produces the same ids.
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
 
 # CELL ********************
 
