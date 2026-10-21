@@ -23,11 +23,11 @@
 # MARKDOWN ********************
 
 # ## Bronze: incremental + change-data-capture load
-# # Reads the app's replicated tables (the `dbo` shortcuts) and appends **only new versions** of each employee to `bronze.employees`. Every row gets:
+# Reads the app's replicated tables (the `dbo` shortcuts) and appends **only new versions** of each employee to `bronze.employees`. Every row gets:
 # - `_op`: `I` insert, `U` update, `D` delete (a tombstone, written when an id disappears from the source)
 # - `_row_hash`: a hash of the business columns, so identical versions are never appended twice
 # - `_ingested_at`: when this run wrote the row
-# # Watermark: rows with `CreatedAt`/`UpdatedAt` at or after *last watermark − look-back* are re-checked. The hash makes the overlap harmless and catches rows committed late with an older timestamp. Set `full_compare = True` (for example on a daily run) to hash-compare **every** row, which also catches edits made directly in SQL without updating `UpdatedAt`.
+# Watermark: rows with `CreatedAt`/`UpdatedAt` at or after *last watermark − look-back* are re-checked. The hash makes the overlap harmless and catches rows committed late with an older timestamp. Set `full_compare = True` (for example on a daily run) to hash-compare **every** row, which also catches edits made directly in SQL without updating `UpdatedAt`.
 
 # PARAMETERS CELL ********************
 
