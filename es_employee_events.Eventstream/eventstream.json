@@ -1,0 +1,143 @@
+{
+  "sources": [
+    {
+      "id": "4006fd59-8cd2-4a93-9d1f-3f65d88c8241",
+      "name": "CustomEndpoint-Source",
+      "type": "CustomEndpoint",
+      "properties": {}
+    }
+  ],
+  "destinations": [
+    {
+      "id": "de9c013f-d893-4e3b-be71-3c0d2e8f1b48",
+      "name": "Lakehouse",
+      "type": "Lakehouse",
+      "properties": {
+        "workspaceId": "00000000-0000-0000-0000-000000000000",
+        "itemId": "8a032e55-a0c5-9749-4264-88bcac9e8e90",
+        "schema": "dbo",
+        "deltaTable": "employee_events",
+        "inputSerialization": {
+          "type": "Json",
+          "properties": {
+            "encoding": "UTF8"
+          }
+        }
+      },
+      "inputNodes": [
+        {
+          "name": "es_employee_events-stream"
+        }
+      ],
+      "inputSchemas": [
+        {
+          "name": "es_employee_events-stream",
+          "schema": {
+            "columns": [
+              {
+                "name": "event_id",
+                "type": "Nvarchar(max)",
+                "fields": null,
+                "items": null
+              },
+              {
+                "name": "event_type",
+                "type": "Nvarchar(max)",
+                "fields": null,
+                "items": null
+              },
+              {
+                "name": "event_time",
+                "type": "DateTime",
+                "fields": null,
+                "items": null
+              },
+              {
+                "name": "source",
+                "type": "Nvarchar(max)",
+                "fields": null,
+                "items": null
+              },
+              {
+                "name": "schema_version",
+                "type": "BigInt",
+                "fields": null,
+                "items": null
+              },
+              {
+                "name": "change",
+                "type": "Nvarchar(max)",
+                "fields": null,
+                "items": null
+              },
+              {
+                "name": "employee",
+                "type": "Record",
+                "fields": [
+                  {
+                    "name": "EmployeeID",
+                    "type": "BigInt",
+                    "fields": null,
+                    "items": null
+                  },
+                  {
+                    "name": "FullName",
+                    "type": "Nvarchar(max)",
+                    "fields": null,
+                    "items": null
+                  },
+                  {
+                    "name": "Email",
+                    "type": "Nvarchar(max)",
+                    "fields": null,
+                    "items": null
+                  },
+                  {
+                    "name": "Salary",
+                    "type": "BigInt",
+                    "fields": null,
+                    "items": null
+                  },
+                  {
+                    "name": "JoiningDate",
+                    "type": "Nvarchar(max)",
+                    "fields": null,
+                    "items": null
+                  },
+                  {
+                    "name": "Department",
+                    "type": "Nvarchar(max)",
+                    "fields": null,
+                    "items": null
+                  },
+                  {
+                    "name": "JobTitle",
+                    "type": "Nvarchar(max)",
+                    "fields": null,
+                    "items": null
+                  }
+                ],
+                "items": null
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "streams": [
+    {
+      "id": "bd9a7990-5a45-4c98-9ca4-cc4baa8f14aa",
+      "name": "es_employee_events-stream",
+      "type": "DefaultStream",
+      "properties": {},
+      "inputNodes": [
+        {
+          "name": "CustomEndpoint-Source"
+        }
+      ]
+    }
+  ],
+  "operators": [],
+  "compatibilityLevel": "1.1"
+}

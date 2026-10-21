@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "lakehouse_optimization_0180ef92-64b2-4fab-a6c4-40e6b3f0d56e_ac9e8e90-88bc-4264-9749-a0c58a032e55_employee_events",
+    "description": "Compaction Job for LakeHouse table employee_events"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "22e1a556-8cc6-a1cb-42fb-701faf3a24a1"
+  }
+}
