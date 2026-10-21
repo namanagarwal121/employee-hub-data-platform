@@ -23,14 +23,12 @@
 # MARKDOWN ********************
 
 # ## Stream bronze: landing → typed, de-duplicated event log
-#
-# The Eventstream writes raw events to `dbo.employee_events`. This notebook moves them to `bronze.employee_events`:
+# # The Eventstream writes raw events to `dbo.employee_events`. This notebook moves them to `bronze.employee_events`:
 # - **Incremental:** a Structured Streaming read with a checkpoint picks up only rows that arrived since the last run (`availableNow` processes the backlog, then stops, so it runs fine as a scheduled or pipeline step).
 # - **Idempotent:** one row per `event_id`. Re-sent events and replays are skipped with a MERGE, not appended twice.
 # - **Typed and flat:** the `employee` struct becomes columns, `Salary` becomes `DECIMAL(12,2)` (Eventstream inferred it as a whole number) and `JoiningDate` becomes a `DATE`.
 # - **Validated, not filtered:** every event is kept, with `_is_valid` and `_reject_reason`. The apply step only uses valid events, and rejects stay queryable.
-#
-# Set `reset = True` once to rebuild the table and checkpoint from the full landing history (for example after changing this notebook).
+# # Set `reset = True` once to rebuild the table and checkpoint from the full landing history (for example after changing this notebook).
 
 # PARAMETERS CELL ********************
 
